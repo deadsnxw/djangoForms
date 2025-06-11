@@ -1,0 +1,8 @@
+<h2>Видалити студента</h2>
+<p>Ви впевнені, що хочете видалити студента "{{ student }}"?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Так, видалити</button>
+</form>
+<a href="{% url 'student_detail' student.pk %}">Скасувати</a>

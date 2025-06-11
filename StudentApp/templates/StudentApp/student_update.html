@@ -1,0 +1,7 @@
+<h2>Оновити дані студента</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Зберегти зміни</button>
+</form>
+<a href="{% url 'student_detail' student.pk %}">Скасувати</a>
