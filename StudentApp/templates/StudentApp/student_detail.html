@@ -1,10 +1,23 @@
 <h2>Інформація про студента</h2>
 <p><strong>Ім'я:</strong> {{ student.first_name }}</p>
 <p><strong>Прізвище:</strong> {{ student.last_name }}</p>
-<p>
-  <a href="{% url 'student_update' student.pk %}">Редагувати</a> |
-  <a href="{% url 'student_delete' student.pk %}">Видалити</a>
-</p>
 
+<h3>Коментарі</h3>
+<ul>
+  {% for comment in comments %}
+    <li><strong>{{ comment.author.username }}</strong>: {{ comment.text }} <em>({{ comment.created_at|date:"d.m.Y H:i" }})</em></li>
+  {% empty %}
+    <li>Коментарів поки немає.</li>
+  {% endfor %}
+</ul>
 
-<a href="{% url 'student_list' %}">Назад до списку</a>
+<h4>Залишити коментар</h4>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Надіслати</button>
+</form>
+
+<a href="{% url 'student_update' student.pk %}">Редагувати</a> |
+<a href="{% url 'student_delete' student.pk %}">Видалити</a> |
+<a href="{% url 'student_list' %}">Назад</a>

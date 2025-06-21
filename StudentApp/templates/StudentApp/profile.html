@@ -1,0 +1,18 @@
+<h2>Профіль користувача {{ profile_user.username }}</h2>
+
+<h3>Залишені коментарі:</h3>
+<ul>
+  {% for comment in comments %}
+    <li>
+      <strong>До студента:</strong>
+      <a href="{% url 'student_detail' comment.student.pk %}">
+        {{ comment.student.first_name }} {{ comment.student.last_name }}
+      </a><br>
+      {{ comment.text }} <em>({{ comment.created_at|date:"d.m.Y H:i" }})</em>
+    </li>
+  {% empty %}
+    <li>Цей користувач ще не залишав коментарів.</li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'student_list' %}">⬅ Назад</a>

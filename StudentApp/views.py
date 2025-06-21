@@ -1,8 +1,11 @@
-from django.shortcuts import render, redirect
-from .models import Student
-from .forms import StudentForm
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Student, Comment
+from .forms import StudentForm, CommentForm
+from django.contrib.auth.decorators import login_required
 from django.views.generic import DetailView, UpdateView, DeleteView
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.contrib.auth.models import User
 
 def student_list(request):
     StudentApp = Student.objects.all()
@@ -18,10 +21,28 @@ def add_student(request):
         form = StudentForm()
     return render(request, 'StudentApp/student_add.html', {'form': form})
 
+@method_decorator(login_required, name='dispatch')
 class StudentDetailView(DetailView):
     model = Student
     template_name = 'StudentApp/student_detail.html'
     context_object_name = 'student'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = self.object.comments.order_by('-created_at')
+        context['form'] = CommentForm()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.author = request.user
+            comment.student = self.object
+            comment.save()
+            return redirect('student_detail', pk=self.object.pk)
+        return self.get(request, *args, **kwargs)
 
 class StudentUpdateView(UpdateView):
     model = Student
@@ -47,3 +68,9 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'StudentApp/register.html', {'form': form})
+
+@login_required
+def profile_view(request, username):
+    user = get_object_or_404(User, username=username)
+    comments = Comment.objects.filter(author=user).order_by('-created_at')
+    return render(request, 'StudentApp/profile.html', {'profile_user': user, 'comments': comments})
