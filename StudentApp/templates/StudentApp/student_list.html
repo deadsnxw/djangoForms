@@ -1,4 +1,12 @@
 <h2>Список студентів</h2>
+{% if user.is_authenticated %}
+  Вітаю, {{ user.username }} | <form method="post" action="{% url 'logout' %}">
+  {% csrf_token %}
+  <button type="submit">Вийти</button>
+</form>
+{% else %}
+  <a href="{% url 'login' %}">Увійти</a> | <a href="{% url 'register' %}">Реєстрація</a>
+{% endif %}
 <ul>
   {% for student in students %}
     <li>

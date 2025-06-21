@@ -32,3 +32,18 @@ class StudentDeleteView(DeleteView):
     model = Student
     template_name = 'StudentApp/student_delete.html'
     success_url = reverse_lazy('student_list')
+
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+from django.shortcuts import render, redirect
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('student_list')
+    else:
+        form = UserCreationForm()
+    return render(request, 'StudentApp/register.html', {'form': form})
